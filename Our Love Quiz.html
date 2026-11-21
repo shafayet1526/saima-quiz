@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Our Love Quiz</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Nunito:wght@500;700&display=swap">
+<style>
+:root{
+  --bg1:#fff1f3; --bg2:#ffd9e0; --ink:#4a1226; --muted:#8a4a5e;
+  --card:#ffffff; --line:#f3b8c6; --rose:#d6336c; --rose2:#ff6b8f; --gold:#c9972b;
+  --ok:#2f8f5b; --okbg:#e3f6ea; --btn:#fff7f9;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg1:#2a0b18; --bg2:#4a1128; --ink:#ffe8ee; --muted:#e8a9bb;
+    --card:#3a1022; --line:#7a2c47; --rose:#ff6b8f; --rose2:#ff9ab3; --gold:#f0c56a;
+    --ok:#7be0a6; --okbg:#173d2a; --btn:#47172b;
+  }
+}
+:root[data-theme="dark"]{
+  --bg1:#2a0b18; --bg2:#4a1128; --ink:#ffe8ee; --muted:#e8a9bb;
+  --card:#3a1022; --line:#7a2c47; --rose:#ff6b8f; --rose2:#ff9ab3; --gold:#f0c56a;
+  --ok:#7be0a6; --okbg:#173d2a; --btn:#47172b;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font-family:"Nunito",system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(170deg,var(--bg1),var(--bg2));background-color:var(--bg1);
+  display:flex;justify-content:center;overflow-x:hidden}
+.wrap{width:100%;max-width:460px;padding:22px 18px 40px;position:relative}
+h1,h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;margin:0;line-height:1.1}
+h1{font-size:44px;font-style:italic}
+.screen{display:none}.screen.on{display:block}
+.center{text-align:center}
+.bn{color:var(--muted);font-size:20px;margin:6px 0 0}
+.lead{font-size:17px;line-height:1.5;color:var(--muted);margin:16px 6px 26px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:16px;padding:15px 26px;font-size:17px;cursor:pointer;
+  background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;box-shadow:0 8px 22px rgba(214,51,108,.28)}
+.btn:focus-visible,.opt:focus-visible,.life:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.hero-heart{width:130px;height:auto;margin:10px auto 0;display:block;animation:beat 1.6s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.top{display:flex;align-items:center;gap:14px}
+.jar{width:78px;flex:none}
+.jar .water{transition:transform .7s cubic-bezier(.3,1.2,.4,1)}
+.meta{flex:1}
+.meta small{color:var(--muted);font-weight:700;font-size:14px}
+.bar{height:8px;border-radius:8px;background:var(--line);margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--rose),var(--gold));transition:width .5s}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 18px;margin-top:18px}
+.q{font-family:"Cormorant Garamond",Georgia,serif;font-size:27px;line-height:1.2;font-weight:600;margin:0 0 16px}
+.opt{display:block;width:100%;text-align:left;font:inherit;font-weight:700;font-size:16px;color:var(--ink);
+  background:var(--btn);border:2px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px;cursor:pointer;
+  transition:transform .15s,background .2s,border-color .2s}
+.opt:active{transform:scale(.98)}
+.opt.gone{visibility:hidden}
+.opt.right{background:var(--okbg);border-color:var(--ok);color:var(--ok)}
+.opt.wrong{opacity:.45;border-style:dashed;pointer-events:none}
+.msg{min-height:48px;margin-top:14px;font-size:16px;line-height:1.4;font-weight:700;color:var(--rose)}
+.msg.ok{color:var(--ok)}
+.lifes{display:flex;gap:10px;margin-top:6px}
+.life{flex:1;font:inherit;font-weight:700;font-size:15px;text-decoration:none;text-align:center;cursor:pointer;
+  color:var(--ink);background:var(--card);border:2px solid var(--gold);border-radius:14px;padding:12px 8px;
+  display:flex;align-items:center;justify-content:center;gap:8px}
+.life[disabled]{opacity:.4;cursor:default;border-color:var(--line)}
+.life svg{width:20px;height:20px;flex:none}
+.next{display:none;margin-top:10px;width:100%}
+.next.on{display:block}
+.letter{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 22px;margin-top:20px;text-align:left}
+.letter h2{font-size:34px;font-style:italic;margin-bottom:12px}
+.letter p{font-size:17px;line-height:1.65;margin:0 0 12px}
+.sign{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:28px;color:var(--rose);margin-top:16px}
+.fly{position:fixed;bottom:-30px;pointer-events:none;z-index:9;animation:up linear forwards}
+@keyframes up{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.hero-heart{animation:none}.fly{display:none}.jar .water,.bar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="s-start" class="screen on center">
+  <svg class="hero-heart" viewBox="0 0 100 90" aria-hidden="true"><path d="M50 86C20 62 4 46 4 28 4 14 15 5 28 5c9 0 18 5 22 13C54 10 63 5 72 5c13 0 24 9 24 23 0 18-16 34-46 58z" fill="#d6336c"/></svg>
+  <h1 style="margin-top:14px">Do you really know us, Saima?</h1>
+  <p class="bn">তুমি কি আমাদের গল্পটা মনে রেখেছ?</p>
+  <p class="lead">Ten questions about the two of us. Every answer fills our heart jar a little more. A wrong answer is never really wrong. You will see.</p>
+  <button class="btn" id="go">Start our quiz</button>
+</section>
+
+<section id="s-quiz" class="screen">
+  <div class="top">
+    <svg class="jar" viewBox="0 0 80 100" aria-label="Heart jar">
+      <defs><clipPath id="jc"><path d="M14 20h52v6c8 4 12 12 12 22v30c0 10-8 18-18 18H20C10 96 2 88 2 78V48c0-10 4-18 12-22z"/></clipPath></defs>
+      <g clip-path="url(#jc)">
+        <rect x="0" y="0" width="80" height="100" fill="var(--card)"/>
+        <rect class="water" id="water" x="0" y="0" width="80" height="100" fill="#ff6b8f" style="transform:translateY(100px)"/>
+      </g>
+      <path d="M14 20h52v6c8 4 12 12 12 22v30c0 10-8 18-18 18H20C10 96 2 88 2 78V48c0-10 4-18 12-22z" fill="none" stroke="var(--rose)" stroke-width="3"/>
+      <rect x="10" y="10" width="60" height="10" rx="4" fill="var(--gold)"/>
+    </svg>
+    <div class="meta"><small id="count">Question 1 of 10</small><div class="bar"><i id="prog"></i></div></div>
+  </div>
+  <div class="qcard">
+    <p class="q" id="q"></p>
+    <div id="opts"></div>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    <button class="btn next" id="next">Next question</button>
+  </div>
+  <div class="lifes" style="margin-top:16px">
+    <button class="life" id="fifty" type="button">50:50</button>
+    <a class="life" id="help" target="_blank" rel="noopener"
+       href="https://wa.me/8801790505477?text=Help%20me%2C%20I%E2%80%99m%20stuck%20on%20a%20question%21%20%F0%9F%92%97">
+      <svg viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.2 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-1.9.9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.2 1.3 2.5 1.5.3.1.5.1.7-.1l.9-1.1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.3.1.2.1.8-.1 1.5z"/></svg>
+      Call for help</a>
+  </div>
+</section>
+
+<section id="s-end" class="screen center">
+  <svg class="hero-heart" viewBox="0 0 100 90" aria-hidden="true"><path d="M50 86C20 62 4 46 4 28 4 14 15 5 28 5c9 0 18 5 22 13C54 10 63 5 72 5c13 0 24 9 24 23 0 18-16 34-46 58z" fill="#d6336c"/></svg>
+  <h1 style="margin-top:12px">Our jar is overflowing</h1>
+  <p class="bn">আমাদের ভালোবাসা উপচে পড়ছে</p>
+  <div class="letter">
+    <h2>My Saima,</h2>
+    <p>From the first time I saw you, to the first hello, to the day you became my wife, every moment with you has been the best part of my life. We have laughed, we have fought, and we always found our way back to each other.</p>
+    <p>Every answer you gave today was right, because you are always right in my heart. How much do I love you? Infinity, and then one more.</p>
+    <p>Happy first anniversary, my love. আমি তোমাকে ভালোবাসি।</p>
+    <div class="sign">Your Shafayet</div>
+  </div>
+  <button class="btn" id="again" style="margin-top:22px">Play again</button>
+</section>
+
+</div>
+<script>
+var QS=[
+ {q:"When did you first see me?",a:"June 25",w:["June 23","June 27","July 5"]},
+ {q:"When did we talk for the first time?",a:"July 6",w:["July 4","July 9","June 26"]},
+ {q:"When did we meet in person for the first time?",a:"July 17",w:["July 15","July 19","August 1"]},
+ {q:"What was I wearing when we first met?",a:"A blue check shirt",w:["A blue striped shirt","A light blue plain shirt","A navy check shirt"]},
+ {q:"When did we get married, and at what time?",a:"November 16, around 8:30 to 9 p.m.",w:["November 14, 8:30 p.m.","November 18, 9 p.m.","November 16, 6:30 p.m."]},
+ {q:"When did we have our first big fight?",a:"December 13 and 14",w:["December 12 and 13","December 14 and 15","December 13 only"]},
+ {q:"What did you say that hurt me during that fight?",a:"I don’t want to see your face right now",w:["I don’t want to hear your voice right now","I don’t want to see you tonight","I don’t want to talk to you right now"],extra:"And look at us now. 💗"},
+ {q:"When did we first spend time alone together?",a:"December 31, in the afternoon",w:["December 30, in the afternoon","December 31, at night","January 1, in the afternoon"]},
+ {q:"What is my favourite colour?",a:"Blue",w:["Navy","Sky blue","Black"]},
+ {q:"Do you know how much Shafayet loves you?",a:"Infinity",w:["A million","More than the stars","More than biryani"]}
+];
+var SWEET=["Wrong answer, but you are always right, my love.","Not this time, but you are still my favourite doctor.","Wrong, but I would forgive you anything.","Incorrect, but you are always right in my heart."];
+var $=function(i){return document.getElementById(i)};
+var i=0,right=0,wrong=0,fiftyUsed=false,locked=false;
+
+function show(id){["s-start","s-quiz","s-end"].forEach(function(s){$(s).classList.toggle("on",s===id)});window.scrollTo(0,0)}
+function shuffle(a){for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1));var t=a[k];a[k]=a[j];a[j]=t}return a}
+function fill(){
+  var pct=Math.min(100,right*10+wrong*0.7);
+  $("water").style.transform="translateY("+(100-pct*0.82)+"px)";
+  $("prog").style.width=(right*10)+"%";
+}
+function render(){
+  var d=QS[i];locked=false;
+  $("count").textContent="Question "+(i+1)+" of "+QS.length;
+  $("q").textContent=d.q;$("msg").textContent="";$("msg").className="msg";
+  $("next").classList.remove("on");
+  var box=$("opts");box.innerHTML="";
+  shuffle([d.a].concat(d.w)).forEach(function(t){
+    var b=document.createElement("button");b.type="button";b.className="opt";b.textContent=t;
+    b.onclick=function(){pick(b,t)};box.appendChild(b);
+  });
+  $("fifty").disabled=fiftyUsed;
+}
+function pick(b,t){
+  if(locked)return;var d=QS[i];
+  if(t===d.a){
+    locked=true;right++;b.classList.add("right");
+    var m=$("msg");m.className="msg ok";
+    m.textContent=(d.extra?d.extra+" ":"")+"Yes, my love! That’s right. 💗";
+    fill();
+    var n=$("next");n.textContent=(i===QS.length-1)?"Open my surprise":"Next question";n.classList.add("on");
+  }else{
+    wrong++;b.classList.add("wrong");
+    $("msg").textContent=SWEET[Math.floor(Math.random()*SWEET.length)]+" Try again!";
+    fill();
+  }
+}
+$("fifty").onclick=function(){
+  if(fiftyUsed||locked)return;fiftyUsed=true;$("fifty").disabled=true;
+  var d=QS[i],gone=0;
+  shuffle(Array.prototype.slice.call(document.querySelectorAll(".opt"))).forEach(function(b){
+    if(gone<2&&b.textContent!==d.a&&!b.classList.contains("wrong")){b.classList.add("gone");b.disabled=true;gone++}
+  });
+};
+$("next").onclick=function(){
+  if(i===QS.length-1){finish()}else{i++;render()}
+};
+function finish(){
+  $("water").style.transform="translateY(0px)";
+  show("s-end");
+  var n=0,t=setInterval(function(){
+    var h=document.createElement("div");h.className="fly";h.textContent=["💗","💖","💕","❤️"][n%4];
+    h.style.left=(Math.random()*95)+"vw";h.style.fontSize=(18+Math.random()*26)+"px";
+    h.style.animationDuration=(3.5+Math.random()*3)+"s";
+    document.body.appendChild(h);setTimeout(function(){h.remove()},7000);
+    if(++n>45)clearInterval(t);
+  },110);
+}
+$("go").onclick=function(){i=0;right=0;wrong=0;fiftyUsed=false;fill();show("s-quiz");render()};
+$("again").onclick=function(){show("s-start")};
+fill();
+</script>
+</body>
+</html>
